@@ -3,6 +3,7 @@ import sinon from 'sinon';
 
 import { LionLitElement } from '@lion/core/src/LionLitElement.js';
 import { Unparseable } from '@lion/validate';
+import { LitElement } from '@lion/core';
 import { FormatMixin } from '../src/FormatMixin.js';
 
 function mimicUserInput(formControl, newViewValue) {
@@ -122,6 +123,28 @@ describe('FormatMixin', () => {
   it('converts serializedValue => modelValue (via this.deserializer)', async () => {
     fooFormat.serializedValue = '[foo] string';
     expect(fooFormat.modelValue).to.equal('string');
+  });
+
+  it('modelValue will sync to viewValue for a nested element', async () => {
+    const tagString = defineCE(
+      class extends LitElement {
+        firstUpdated() {
+          this.shadowRoot.querySelector('ing-input').modelValue = 'bar';
+        }
+
+        render() {
+          return html`
+            <ing-input name="foo"></ing-input>
+          `;
+        }
+      },
+    );
+
+    const tag = unsafeStatic(tagString);
+    const el = await fixture(html`
+      <${tag}></${tag}>
+    `);
+    expect(el.shadowRoot.querySelector('ing-input').value).to.equal('bar');
   });
 
   it('synchronizes inputElement.value as a fallback mechanism', async () => {
