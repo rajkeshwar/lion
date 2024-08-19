@@ -22,6 +22,62 @@ import './src/slots-dialog-content.js';
 </lion-dialog>
 ```
 
+## Trigger Dialog Externally
+
+```js script
+import { LitElement, html } from 'lit';
+import { LionDialog } from '@lion/ui/dialog.js';
+import { ScopedElementsMixin } from '@open-wc/scoped-elements/lit-element.js';
+
+class DialogDemo extends ScopedElementsMixin(LitElement) {
+  static properties = {
+    isOpen: { type: Boolean, state: true },
+  };
+
+  static scopedElements = {
+    'lion-dialog': LionDialog,
+  };
+
+  openDialog() {
+    console.log('opened called');
+    this.isOpen = true;
+  }
+
+  handleClose() {
+    console.log('close called');
+    this.isOpen = false;
+  }
+
+  render() {
+    return html`
+      <h1>Hello DialogDemo</h1>
+      <button @click=${this.openDialog}>Open dialog</button>
+      <lion-dialog ?opened=${this.isOpen}>
+        <div slot="content" class="demo-dialog-content">
+          Hello! You can close this dialog here:
+          <button class="demo-dialog-content__close-button" @click=${this.handleClose}>⨯</button>
+        </div>
+      </lion-dialog>
+    `;
+  }
+}
+
+customElements.define('dilaog-demo', DialogDemo);
+```
+
+```js preview-story
+export const triggerDialogExternally = () => {
+  return html`
+    <style>
+      ${demoStyle}
+    </style>
+    <div class="demo-box_placements">
+      <dilaog-demo></dilaog-demo>
+    </div>
+  `;
+};
+```
+
 ## Placement overrides
 
 ```js preview-story
